@@ -1,0 +1,102 @@
+http://127.0.0.1:24999/info /\ GET Method
+
+General TLS Information
+
+http://127.0.0.1:24999/docs 
+
+Future Documentations for the features 
+
+http://127.0.0.1:24999/v1_dev/Real /\ POST Method
+2 /\ options:
+1 - is json payload
+{"url": "akamai.com", "ua": "Mozilla/5.0 ..."}
+2 - is get request
+X-RealTLS-URL: Example.com
+X-RealTLS-UA: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36
+X-RealTLS-Mode: cookies / payload
+X-RealTLS-Timeout: 30
+X-RealTLS-Proxy: false
+X-RealTLS-Proxy-URL: <data.Proxy>
+
+Features: Uses Headless Chrome and JS Execution for Cookie parsing Works Great with akamai and other Waf securities
+
+http://127.0.0.1:24999/v1_dev/RealTLS /\ POST Method
+
+X-RealTLS-URL: golang.org
+X-RealTLS-REQMETHOD: GET / POST
+X-RealTLS-Timeout: 30
+X-RealTLS-Proxy: false
+X-RealTLS-Proxy-URL: <data.Proxy>
+X-RealTLS-UA: Optional
+X-RealTLS-Fingerprinting: macos
+X-RealTLS-Enable-Insecure: false / true this is for http2 for example when your sending a request it does need certifcate validation but some may setup a fake cert and steal data that is bein sent because when turning on it wont validate the certificate
+X-RealTLS-Header-Order: [optional ofc] eg: Host,Connection,sec-ch-ua,user-agent,accept
+
+Current Fingerprints:
+chrome - Chrome v142 fingerprint
+firefox - Firefox v144 fingerprint
+ios - iOS Chrome fingerprint
+android - Android Chrome fingerprint
+windows - Windows Chrome fingerprint
+macos - macOS Chrome fingerprint
+linux - Linux Chrome fingerprint
+
+if you anything does not work any errors let us know
+
+http://127.0.0.1:24999/v1_dev/fastapi
+
+uses FHTTP same headers if the RealTLS
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Bonus for proxy format:
+
+Proxy Format: RealProxy Lollicode
+
+string RealProxy = ConstantString(data, "");
+data.LogVariableAssignment(nameof(RealProxy));
+if (CheckCondition(data, data.UseProxy.AsBool(), BoolComparison.Is, true))
+{
+string prux = ConstantString(data, data.Proxy.ToString());
+data.LogVariableAssignment(nameof(prux));
+string formatCheck = MatchRegexGroups(data, prux, "^[^:]+:[^:]+:[^:]+:[^:]+$", "[0]", false, "", "", false);
+if (!string.IsNullOrEmpty(formatCheck))
+{
+string hostport = MatchRegexGroups(data, prux, "^([^:]+:[^:]+)", "[1]", false, "", "", false);
+data.LogVariableAssignment(nameof(hostport));
+string userpass = MatchRegexGroups(data, prux, "([^:]+:[^:]+)$", "[1]", false, "", "", false);
+data.LogVariableAssignment(nameof(userpass));
+RealProxy = ConstantString(data, $"http://{userpass}@{hostport}");
+data.LogVariableAssignment(nameof(RealProxy));
+}
+else
+{
+RealProxy = ConstantString(data, "");
+}
+}
+else
+{
+RealProxy = ConstantString(data, "");
+}
+data.UseProxy = false;
+
+
+Variable is <RealProxy>
+
+any bugs you see or stuff that do not function let me know @TheRealSadmc
